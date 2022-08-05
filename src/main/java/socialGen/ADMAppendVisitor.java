@@ -56,7 +56,7 @@ public class ADMAppendVisitor extends AbstractAppendVisitor implements IAppendVi
     }
 
     public IAppendVisitor visit(Point point) {
-        builder.append("point(\"").append(point.getLatitude()).append(",").append(point.getLongitude()).append("\")");
+        builder.append("\"point(").append(point.getLatitude()).append(" ").append(point.getLongitude()).append(")\"");
         return this;
     }
 }

@@ -13,7 +13,7 @@ then
    exit 1
 fi
 
-# java -cp $SOCIAL_GEN_HOME/target/SocialGen.jar socialGen.PreDataGenerator $SOCIAL_GEN_HOME
+java -cp $SOCIAL_GEN_HOME/target/SocialGen.jar socialGen.PreDataGenerator $SOCIAL_GEN_HOME
 
 for i in `cat $SOCIAL_GEN_HOME/output/partitions`
 do
@@ -25,6 +25,6 @@ do
 
   # machine=${i%%:*}
   # partition=${i##*:}
-  ssh $machine java -cp $SOCIAL_GEN_LOCAL_HOME/target/SocialGen.jar socialGen.PreDataGenerator $SOCIAL_GEN_LOCAL_HOME
+  #ssh $machine java -cp $SOCIAL_GEN_LOCAL_HOME/target/SocialGen.jar socialGen.PreDataGenerator $SOCIAL_GEN_LOCAL_HOME
   ssh $machine $SOCIAL_GEN_LOCAL_HOME/scripts/db-gen.sh $SOCIAL_GEN_HOME $SOCIAL_GEN_LOCAL_HOME $partition "$@" &
 done

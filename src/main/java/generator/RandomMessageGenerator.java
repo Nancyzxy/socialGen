@@ -31,8 +31,12 @@ public class RandomMessageGenerator {
     //Params' Tags in Config File
     private final String posAdj = "POS_ADJ";
     private final String negAdj = "NEG_ADJ";
+    private final String neuAdj = "NEU_ADJ";
     private final String posFeel = "POS_FEEL";
     private final String negFeel = "NEG_FEEL";
+    private final String neuFeel = "NEU_FEEL";
+    private final String extremeAdv = "EXTREME_ADV";
+    private final String someAdv = "SOME_ADV";
 
     private final String serviceActivityVerbs = "SERV_VERB";
     private final String jargon = "JARGON";
@@ -75,8 +79,12 @@ public class RandomMessageGenerator {
     private void setServiceMsgGen(long seed) {
         String posAdjFile = settings.getParam(posAdj);
         String negAdjFile = settings.getParam(negAdj);
+        String neuAdjFile = settings.getParam(neuAdj);
         String posFeelFile = settings.getParam(posFeel);
         String negFeelFile = settings.getParam(negFeel);
+        String neuFeelFile = settings.getParam(neuFeel);
+        String extremeAdvFile = settings.getParam(extremeAdv);
+        String someAdvFile = settings.getParam(someAdv);
 
         String serviceActivityVerbsFile = settings.getParam(serviceActivityVerbs);
         String jargonFile = settings.getParam(jargon);
@@ -87,7 +95,7 @@ public class RandomMessageGenerator {
         String vendor_medFile = settings.getParam(vendor_med);
         String vendor_freqFile = settings.getParam(vendor_freq);
 
-        this.serviceMsgGen = new ServiceRelatedMessage(posAdjFile, negAdjFile, posFeelFile, negFeelFile,
+        this.serviceMsgGen = new ServiceRelatedMessage(posAdjFile, negAdjFile, neuAdjFile, posFeelFile, negFeelFile, neuFeelFile, extremeAdvFile ,someAdvFile,
                 serviceActivityVerbsFile, jargonFile, seed);
         serviceMsgGen.setLocs(location_rareFile, location_medFile, location_freqFile);
         serviceMsgGen.setVendors(vendor_rareFile, vendor_medFile, vendor_freqFile);
@@ -96,8 +104,13 @@ public class RandomMessageGenerator {
     private void setDeviceMsgGen(long seed) {
         String posAdjFile = settings.getParam(posAdj);
         String negAdjFile = settings.getParam(negAdj);
+        String neuAdjFile = settings.getParam(neuAdj);
         String posFeelFile = settings.getParam(posFeel);
         String negFeelFile = settings.getParam(negFeel);
+        String neuFeelFile = settings.getParam(neuFeel);
+        String extremeAdvFile = settings.getParam(extremeAdv);
+        String someAdvFile = settings.getParam(someAdv);
+
 
         String deviceActivityVerbsFile = settings.getParam(deviceActivityVerbs);
         String timeFile = settings.getParam(time);
@@ -108,7 +121,7 @@ public class RandomMessageGenerator {
         String part_medFile = settings.getParam(part_med);
         String part_freqFile = settings.getParam(part_freq);
 
-        this.deviceMsgGen = new DeviceRelatedMessage(posAdjFile, negAdjFile, posFeelFile, negFeelFile,
+        this.deviceMsgGen = new DeviceRelatedMessage(posAdjFile, negAdjFile, neuAdjFile, posFeelFile, negFeelFile, neuFeelFile, extremeAdvFile ,someAdvFile,
                 deviceActivityVerbsFile, timeFile, seed);
         deviceMsgGen.setDevices(device_rareFile, device_medFile, device_freqFile);
         deviceMsgGen.setParts(part_rareFile, part_medFile, part_freqFile);
@@ -124,16 +137,25 @@ abstract class MessageTemplate {
 
     List<String> positiveFeeling;
     List<String> negativeFeeling;
+    List<String> neutralFeeling;
     List<String> positiveAdj;
     List<String> negativeAdj;
+    List<String> neutralAdj;
+    List<String> extremeAdv;
+    List<String> someAdv;
 
-    public MessageTemplate(String posAdjFile, String negAdjFile, String posFeelFile, String negFeelFile, long seed) {
+    public MessageTemplate(String posAdjFile, String negAdjFile, String neuAdjFile, String posFeelFile, String negFeelFile, String neuFeelFile,String extremeAdvFile, String someAdvFile, long seed) {
         this.random = new Random(seed);
         try {
             positiveAdj = FileUtil.listyFile(new File(posAdjFile));
             negativeAdj = FileUtil.listyFile(new File(negAdjFile));
+            neutralAdj = FileUtil.listyFile(new File(neuAdjFile));
             positiveFeeling = FileUtil.listyFile(new File(posFeelFile));
             negativeFeeling = FileUtil.listyFile(new File(negFeelFile));
+            neutralFeeling = FileUtil.listyFile(new File(neuFeelFile));
+            extremeAdv = FileUtil.listyFile(new File(extremeAdvFile));
+            someAdv = FileUtil.listyFile(new File(someAdvFile));
+            
         } catch (IOException e) {
             System.err.println("Problem in loading dictionary files for message generator");
             e.printStackTrace();
@@ -142,20 +164,56 @@ abstract class MessageTemplate {
 
     public abstract Message getNextRandomMessage(boolean needTopics);
 
-    protected String getRandomFeelingVerb(boolean isPositive) {
-        int rix = isPositive ? random.nextInt(positiveFeeling.size()) : random.nextInt(negativeFeeling.size());
-        if (isPositive) {
-            return new String(positiveFeeling.get(rix));
+    protected String getRandomAdv(int sentiment) {
+        int rix=0;
+        switch(sentiment){
+            case 0:
+            case 4:
+                rix = random.nextInt(extremeAdv.size());
+                return new String(extremeAdv.get(rix));
+            case 2:
+                return "";
+            case 1:
+            case 3:
+                rix = random.nextInt(someAdv.size());
+                return new String(someAdv.get(rix));
         }
-        return new String(negativeFeeling.get(rix));
+        return null;
+    }
+    protected String getRandomFeelingVerb(int sentiment) {
+        int rix = 0;
+        switch(sentiment){
+            case 0:
+            case 1:
+                rix = random.nextInt(negativeFeeling.size());
+                return new String(negativeFeeling.get(rix));
+            case 2:
+                rix = random.nextInt(neutralFeeling.size());
+                return new String(neutralFeeling.get(rix));
+            case 3:
+            case 4:
+                rix = random.nextInt(negativeFeeling.size());
+                return new String(positiveFeeling.get(rix));
+        }
+        return null;
     }
 
-    protected String getRandomAdj(boolean isPositive) {
-        int rix = isPositive ? random.nextInt(positiveAdj.size()) : random.nextInt(negativeAdj.size());
-        if (isPositive) {
-            return new String(positiveAdj.get(rix));
+    protected String getRandomAdj(int sentiment) {
+        int rix = 0;
+        switch(sentiment){
+            case 0:
+            case 1:
+                rix = random.nextInt(negativeAdj.size());
+                return new String(negativeAdj.get(rix));
+            case 2:
+                rix = random.nextInt(neutralAdj.size());
+                return new String(neutralAdj.get(rix));
+            case 3:
+            case 4:
+                rix = random.nextInt(positiveAdj.size());
+                return new String(positiveAdj.get(rix));
         }
-        return new String(negativeAdj.get(rix));
+        return null;
     }
 
     protected String addNoise(String orig) {
@@ -199,11 +257,11 @@ class ServiceRelatedMessage extends MessageTemplate {
     List<String> vendor_med;
     List<String> vendor_freq;
 
-    String[] baseParts = new String[6];
+    String[] baseParts = new String[7];
 
-    public ServiceRelatedMessage(String posAdjFile, String negAdjFile, String posFeelFile, String negFeelFile,
+    public ServiceRelatedMessage(String posAdjFile, String negAdjFile, String neuAdjFile, String posFeelFile, String negFeelFile, String neuFeelFile,String extremeAdvFile, String someAdvFile,
             String actVerbFile, String jargonFile, long seed) {
-        super(posAdjFile, negAdjFile, posFeelFile, negFeelFile, seed);
+        super(posAdjFile, negAdjFile, neuAdjFile, posFeelFile, negFeelFile, neuFeelFile, extremeAdvFile,someAdvFile, seed);
         try {
             jargon = FileUtil.listyFile(new File(jargonFile));
             activityVerbs = FileUtil.listyFile(new File(actVerbFile));
@@ -237,7 +295,7 @@ class ServiceRelatedMessage extends MessageTemplate {
 
     @Override
     public Message getNextRandomMessage(boolean needTopics) {
-        boolean isPositive = random.nextBoolean();
+        int sentiment = random.nextInt(5);
         boolean isNoisy = (random.nextDouble()) < NOISE ? true : false;
         double msgClass = random.nextDouble();
         String[] locVendor;
@@ -248,12 +306,12 @@ class ServiceRelatedMessage extends MessageTemplate {
         } else {
             locVendor = getFreqLocVendor();
         }
-        return getNextMessage(locVendor[0], locVendor[1], isPositive, isNoisy, needTopics);
+        return getNextMessage(locVendor[0], locVendor[1], sentiment, isNoisy, needTopics);
     }
 
-    private Message getNextMessage(String location, String vendor, boolean isPositive, boolean isNoisy,
+    private Message getNextMessage(String location, String vendor, int sentiment, boolean isNoisy,
             boolean needTopics) {
-        getBasicMsgParts(isPositive);
+        getBasicMsgParts(sentiment);
         List<String> topics = null;
         if (needTopics) {
             topics = getReferredTopics(location, vendor);
@@ -262,19 +320,20 @@ class ServiceRelatedMessage extends MessageTemplate {
             vendor = addNoise(vendor);
         }
         StringBuilder sb = new StringBuilder(baseParts[0]);
-        sb.append(" ").append(location).append(", ").append(baseParts[1]);
-        sb.append(" ").append(vendor).append(", ").append(baseParts[2]).append(" ");
-        sb.append(baseParts[3]).append(" ").append(baseParts[4]).append(" ").append(baseParts[5]);
-        return new Message(sb.toString().toCharArray(), topics, isPositive);
+        sb.append(" ").append(location).append(", ").append(baseParts[1]).append(" ").append((baseParts[2]));
+        sb.append(" ").append(vendor).append(", ").append(baseParts[3]).append(" ");
+        sb.append(baseParts[4]).append(" ").append(baseParts[5]).append(" ").append(baseParts[6]);
+        return new Message(sb.toString().toCharArray(), topics, sentiment);
     }
 
-    private void getBasicMsgParts(boolean isPositive) { //[0]=Activity_Verb [1]=Feeling_Verb [2]=Con1 [3]=Jargon [4]=Con2 [5]=Adj
+    private void getBasicMsgParts(int sentiment) { //[0]=Activity_Verb [1]=Adv [2]=Feeling_Verb [3]=Con1 [4]=Jargon [5]=Con2 [6]=Adj
         baseParts[0] = getRandomActivity();
-        baseParts[1] = getRandomFeelingVerb(isPositive);
-        baseParts[2] = con1[random.nextInt(con1.length)];
-        baseParts[3] = getRandomJargon();
-        baseParts[4] = con2[random.nextInt(con2.length)];
-        baseParts[5] = getRandomAdj(isPositive);
+        baseParts[1] = getRandomAdv(sentiment);
+        baseParts[2] = getRandomFeelingVerb(sentiment);
+        baseParts[3] = con1[random.nextInt(con1.length)];
+        baseParts[4] = getRandomJargon();
+        baseParts[5] = con2[random.nextInt(con2.length)];
+        baseParts[6] = getRandomAdj(sentiment);
     }
 
     private String[] getRareLocVendor() {
@@ -335,11 +394,11 @@ class DeviceRelatedMessage extends MessageTemplate {
     List<String> part_med;
     List<String> part_freq;
 
-    String[] baseParts = new String[5]; //Keep reusing it
+    String[] baseParts = new String[6]; //Keep reusing it
 
-    public DeviceRelatedMessage(String posAdjFile, String negAdjFile, String posFeelFile, String negFeelFile,
+    public DeviceRelatedMessage(String posAdjFile, String negAdjFile, String neuAdjFile, String posFeelFile, String negFeelFile, String neuFeelFile,String extremeAdvFile, String someAdvFile,
             String actVerbFile, String timeFile, long seed) {
-        super(posAdjFile, negAdjFile, posFeelFile, negFeelFile, seed);
+        super(posAdjFile, negAdjFile,neuAdjFile, posFeelFile, negFeelFile, neuFeelFile,extremeAdvFile,someAdvFile, seed);
         try {
             time = FileUtil.listyFile(new File(timeFile));
             activityVerbs = FileUtil.listyFile(new File(actVerbFile));
@@ -373,7 +432,7 @@ class DeviceRelatedMessage extends MessageTemplate {
 
     @Override
     public Message getNextRandomMessage(boolean needTopics) {
-        boolean isPositive = random.nextBoolean();
+        int sentiment = random.nextInt(5);
         boolean isNoisy = (random.nextDouble()) < NOISE ? true : false;
         double msgClass = random.nextDouble();
         String[] devPart;
@@ -384,12 +443,12 @@ class DeviceRelatedMessage extends MessageTemplate {
         } else {
             devPart = getFreqDevPart();
         }
-        return getNextMessage(devPart[0], devPart[1], isPositive, isNoisy, needTopics);
+        return getNextMessage(devPart[0], devPart[1], sentiment, isNoisy, needTopics);
     }
 
-    private Message getNextMessage(String device, String part, boolean isPositive, boolean isNoisy,
+    private Message getNextMessage(String device, String part, int sentiment, boolean isNoisy,
             boolean needTopics) {
-        getBasicMsgParts(isPositive);
+        getBasicMsgParts(sentiment);
         String rTime = getRandomTime();
         List<String> topics = null;
         if (needTopics) {
@@ -399,18 +458,19 @@ class DeviceRelatedMessage extends MessageTemplate {
             device = addNoise(device);
         }
         StringBuilder sb = new StringBuilder(baseParts[0]);
-        sb.append(" ").append(device).append(" ").append(rTime).append(", ").append(baseParts[1]);
-        sb.append(" ").append(baseParts[2]).append(" ");
-        sb.append(part).append(", ").append(baseParts[3]).append(" ").append(baseParts[4]);
-        return new Message(sb.toString().toCharArray(), topics, isPositive);
+        sb.append(" ").append(device).append(" ").append(rTime).append(", ").append(baseParts[1]).append(" ").append(baseParts[2]);
+        sb.append(" ").append(baseParts[3]).append(" ");
+        sb.append(part).append(", ").append(baseParts[4]).append(" ").append(baseParts[5]);
+        return new Message(sb.toString().toCharArray(), topics, sentiment);
     }
 
-    private void getBasicMsgParts(boolean isPositive) { //[0]=Activity_Verb [1]=Feeling_Verb [2]=Con1 [3]=Con2 [4]=Adj
+    private void getBasicMsgParts(int sentiment) { //[0]=Activity_Verb [1]=Adv [2]=Feeling_Verb [3]=Con1 [4]=Con2 [5]=Adj
         baseParts[0] = getRandomActivity();
-        baseParts[1] = getRandomFeelingVerb(isPositive);
-        baseParts[2] = con1[random.nextInt(con1.length)];
-        baseParts[3] = con2[random.nextInt(con2.length)];
-        baseParts[4] = getRandomAdj(isPositive);
+        baseParts[1] = getRandomAdv(sentiment);
+        baseParts[2] = getRandomFeelingVerb(sentiment);
+        baseParts[3] = con1[random.nextInt(con1.length)];
+        baseParts[4] = con2[random.nextInt(con2.length)];
+        baseParts[5] = getRandomAdj(sentiment);
     }
 
     private String[] getRareDevPart() {

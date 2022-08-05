@@ -12,4 +12,4 @@ shift
 PARTITION=$1
 shift
 
-java -Xms1g -Xmx2g -cp $SOCIAL_GEN_LOCAL_HOME/target/SocialGen.jar socialGen.DataGenerator $SOCIAL_GEN_LOCAL_HOME $PARTITION $@
+java -Xms1g -Xmx2g -cp $SOCIAL_GEN_LOCAL_HOME/target/SocialGen.jar socialGen.DataGenerator $SOCIAL_GEN_HOME $PARTITION $@

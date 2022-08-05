@@ -27,7 +27,7 @@ public class GleambookMessage {
     private long inResponseTo;
     private Point senderLocation;
     private DateTime sendTime;
-    private boolean isPositive;
+    private int sentiment;
     private Message message;
 
     public long getMessageId() {
@@ -63,14 +63,14 @@ public class GleambookMessage {
         this.message = message;
     }
 
-    public void reset(long messageId, long authorId, long inResponseTo, Point senderLocation, DateTime sendTime, boolean isPositive,
+    public void reset(long messageId, long authorId, long inResponseTo, Point senderLocation, DateTime sendTime, int sentiment,
             Message message) {
         this.messageId = messageId;
         this.authorId = authorId;
         this.inResponseTo = inResponseTo;
         this.senderLocation = senderLocation;
         this.sendTime = sendTime;
-        this.isPositive = isPositive;
+        this.sentiment = sentiment;
         this.message = message;
     }
 
@@ -84,7 +84,7 @@ public class GleambookMessage {
         visitor.append(", \"in_response_to\": ").visit(inResponseTo);
         visitor.append(", \"sender_location\": ").visit(senderLocation);
         visitor.append(", \"send_time\": ").visit(sendTime);
-        visitor.append(", \"is_positive\": ").visit(isPositive);
+        visitor.append(", \"sentiment\": ").visit(sentiment);
         visitor.append(", \"message\": ").visit(message);
         return visitor.append("}");
     }

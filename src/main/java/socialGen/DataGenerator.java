@@ -132,7 +132,7 @@ public class DataGenerator {
             Point location = randLocationGen.getRandomPoint();
             DateTime sendTime = randDateGen.getNextRandomDatetime();
             gBookMessage.reset(gBookMsgId++, user.getId(),
-                    generateRandomLong(1, (numOfGBookUsers * avgMsgPerGBookUser)), location, sendTime, message.isPositive(), message);
+                    generateRandomLong(1, (numOfGBookUsers * avgMsgPerGBookUser)), location, sendTime, message.getSentiment(), message);
             appender.appendToFile(visitor.reset().visit(gBookMessage).toString());
         }
     }
@@ -144,7 +144,7 @@ public class DataGenerator {
             message = randMessageGen.getNextRandomMessage(true);
             Point location = randLocationGen.getRandomPoint();
             DateTime sendTime = randDateGen.getNextRandomDatetime();
-            chirpMessage.reset(chirpMsgId, user, location, sendTime, message.getReferredTopics(), message.isPositive(), message);
+            chirpMessage.reset(chirpMsgId, user, location, sendTime, message.getReferredTopics(), message.getSentiment(), message);
             chirpMsgId++;
             appender.appendToFile(visitor.reset().visit(chirpMessage).toString());
         }

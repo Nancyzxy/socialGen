@@ -3,8 +3,12 @@
 #Note that all these files should be under metadata folder in $SOCIAL_GEN_HOME
 POS_ADJ,posAdj.txt
 NEG_ADJ,negAdj.txt
+NEU_ADJ,neuAdj.txt
 POS_FEEL,posFeel.txt
 NEG_FEEL,negFeel.txt
+NEU_FEEL,neuFeel.txt
+EXTREME_ADV,extremeAdv.txt
+SOME_ADV,someAdv.txt
 #
 #
 SERV_VERB,serviceVerb.txt

@@ -29,7 +29,7 @@ public class ChirpMessage {
     private Point senderLocation;
     private DateTime sendTime;
     private List<String> referredTopics;
-    private boolean isPositive;
+    private int sentiment;
     private Message messageText;
 
     public ChirpMessage() {
@@ -37,24 +37,24 @@ public class ChirpMessage {
     }
 
     public ChirpMessage(long chirpId, ChirpUser user, Point senderLocation, DateTime sendTime,
-            List<String> referredTopics, boolean isPositive, Message messageText) {
+            List<String> referredTopics, int sentiment, Message messageText) {
         this.chirpId = chirpId;
         this.user = user;
         this.senderLocation = senderLocation;
         this.sendTime = sendTime;
         this.referredTopics = referredTopics;
-        this.isPositive = isPositive;
+        this.sentiment = sentiment;
         this.messageText = messageText;
     }
 
     public void reset(long chirpId, ChirpUser user, Point senderLocation, DateTime sendTime,
-                      List<String> referredTopics, boolean isPositive, Message messageText) {
+                      List<String> referredTopics, int sentiment, Message messageText) {
         this.chirpId = chirpId;
         this.user = user;
         this.senderLocation = senderLocation;
         this.sendTime = sendTime;
         this.referredTopics = referredTopics;
-        this.isPositive = isPositive;
+        this.sentiment = sentiment;
         this.messageText = messageText;
     }
 
@@ -68,7 +68,7 @@ public class ChirpMessage {
         visitor.append(", \"sender_location\": ").visit(senderLocation);
         visitor.append(", \"send_time\": ").visit(sendTime);
         visitor.append(", \"referred_topics\": ").visit(referredTopics);
-        visitor.append(", \"positiveSentiment\": ").visit(isPositive);
+        visitor.append(", \"sentiment\": ").visit(sentiment);
         visitor.append(", \"message_text\": ").visit(messageText);
         return visitor.append("}");
     }

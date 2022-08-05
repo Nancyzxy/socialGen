@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Dbgen>
-<gleambook.users.count>1000</gleambook.users.count>
-<chirp.users.count>1000</chirp.users.count>
+<gleambook.users.count>100000000</gleambook.users.count>
+<chirp.users.count>100000000</chirp.users.count>
 <avg.message.count.per.gleambook.user>5</avg.message.count.per.gleambook.user>
-<avg.message.count.per.chirp.user>10</avg.message.count.per.chirp.user>
+<avg.message.count.per.chirp.user>5</avg.message.count.per.chirp.user>
 <seed>10</seed>
 
 <partitions>

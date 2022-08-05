@@ -23,13 +23,14 @@ public class Message {
     private List<String> referredTopics;
     private int length;
 
-    private boolean isPositive;
+    //private boolean isPositive;
+    private int sentiment; //0-really hate 1-some hate 2-neutral 3-some like 4-really like
 
-    public Message(char[] m, List<String> referredTopics, boolean isPositive) {
+    public Message(char[] m, List<String> referredTopics, int sentiment) {
         System.arraycopy(m, 0, message, 0, m.length);
         length = m.length;
         this.referredTopics = referredTopics;
-        this.isPositive = isPositive;
+        this.sentiment = sentiment;
     }
 
     public Message() {
@@ -45,8 +46,8 @@ public class Message {
         return referredTopics;
     }
 
-    public boolean isPositive() {
-        return isPositive;
+    public int getSentiment() {
+        return sentiment;
     }
 
     public void reset(char[] m, int offset, int length, List<String> referredTopics) {
